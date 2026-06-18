@@ -19,15 +19,22 @@ export default function NotificationCard({
     >
       <CardContent>
         <Typography variant="h6">
-          {notification.type || notification.Type}
+          {notification?.type ||
+            notification?.Type ||
+            "Notification"}
         </Typography>
 
         <Typography>
-          {notification.message || notification.Message}
+          {notification?.message ||
+            notification?.Message ||
+            "No message"}
         </Typography>
 
         <Typography variant="caption">
-          Score: {notification.score}
+          Score:{" "}
+          {notification?.score ||
+            notification?.Score ||
+            0}
         </Typography>
       </CardContent>
     </Card>

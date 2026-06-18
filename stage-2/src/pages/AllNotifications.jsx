@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container } from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import NotificationCard from "../components/NotificationCard";
 import { getNotifications } from "../services/notificationService";
 import {
@@ -8,7 +8,6 @@ import {
 } from "../utils/viewedNotifications";
 
 export default function AllNotifications() {
-
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
@@ -16,28 +15,60 @@ export default function AllNotifications() {
   }, []);
 
   const load = async () => {
-    const data = await getNotifications(1, 20);
-    setNotifications(data.notifications || []);
+    try {
+      const data = await getNotifications(1, 20);
+
+      alert(
+        "SUCCESS:\n" +
+        JSON.stringify(data, null, 2)
+      );
+
+      const items =
+        data?.notifications ||
+        data?.data ||
+        [];
+
+      setNotifications(items);
+
+      items.forEach((_, index) => {
+        markViewed(index);
+      });
+    } catch (error) {
+      alert(
+        "ERROR:\n" +
+        JSON.stringify(
+          error.response?.data || error.message,
+          null,
+          2
+        )
+      );
+
+      console.error(error);
+      setNotifications([]);
+    }
   };
 
   const viewed = getViewed();
 
   return (
-    <Container>
-      <h2>All Notifications</h2>
+    <Container sx={{ mt: 3 }}>
+      <Typography variant="h3" gutterBottom>
+        All Notifications
+      </Typography>
 
-      {notifications.map((n, index) => {
-
-        markViewed(index);
-
-        return (
+      {notifications.length === 0 ? (
+        <Typography>
+          No notifications found
+        </Typography>
+      ) : (
+        notifications.map((n, index) => (
           <NotificationCard
             key={index}
             notification={n}
             viewed={viewed.includes(index)}
           />
-        );
-      })}
+        ))
+      )}
     </Container>
   );
 }
